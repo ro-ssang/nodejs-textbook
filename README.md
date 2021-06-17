@@ -5,3 +5,7 @@
 - [x] JS 파일 실행하기
 - [x] 모듈 만들기
 - [x] global과 콘솔, 타이머
+- [x] exports와 this
+- [x] process
+- [x] os와 path
+- [x] url과 querystring
