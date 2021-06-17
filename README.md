@@ -11,3 +11,4 @@
 - [x] url과 querystring
 - [x] crypto와 util
 - [x] 파일 시스템 이용하기
+- [x] 버퍼와 스트림 이해하기
