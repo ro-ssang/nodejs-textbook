@@ -22,3 +22,8 @@
 - [x] REST API 서버 만들기
 - [x] 쿠키 이해하기
 - [x] 세션 사용하기
+- [x] https, http2c
+- [ ] cluster
+
+## 5장
+- [x] package.json으로 패키지 관리하기
