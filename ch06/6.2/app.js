@@ -5,9 +5,9 @@ const app = express();
 
 app.set("port", process.env.PORT || 3000);
 
+// 에러 발생 시키기
 app.use((req, res, next) => {
-    console.log("모든 요청에 실행하고 싶어요!");
-    next();
+    throw new Error("에러 발생!");
 });
 
 app.get("/", (req, res) => {
@@ -16,6 +16,12 @@ app.get("/", (req, res) => {
 
 app.get("/about", (req, res) => {
     res.send("About 페이지");
+});
+
+// 에러 처리 미들웨어
+app.use((err, req, res, next) => {
+    console.error(err);
+    res.status(500).send("에러 처리");
 });
 
 app.listen(app.get("port"), () => {
