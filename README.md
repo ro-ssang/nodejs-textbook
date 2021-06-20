@@ -31,3 +31,4 @@
 
 ## 6장
 - [x] express 서버 사용해보기
+- [x] express로 html 서빙하기
