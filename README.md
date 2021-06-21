@@ -40,3 +40,4 @@
 - [x] express-session 미들웨어
 - [x] multer 사용하기
 - [x] dotenv 사용하기
+- [x] 라우터 분리하기
