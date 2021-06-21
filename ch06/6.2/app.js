@@ -3,25 +3,81 @@ const path = require("path");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const multer = require("multer");
+const fs = require("fs");
 
 const app = express();
 
 app.use(morgan("dev"));
-app.use("/", express.static(path.join(__dirname, "public"))); // 정적 파일을 제공한다.
+app.use("/", express.static(path.join(__dirname, "public")));
 app.use(cookieParser("secret code"));
 app.use(
     session({
-        resave: false, // 요청이 왔을 때 세션에 수정 사항이 생기지 않더라도 저장할 것인가?
-        saveUninitialized: false, // 세션에 저장할 내역이 없더라도 세션을 저장할 것인가?
-        secret: "secret code", // 필수 항목. 쿠키에 서명을 추가한다. 쿠키파서의 비밀키와 같게 한다.
+        resave: false,
+        saveUninitialized: false,
+        secret: "secret code",
         cookie: {
-            httpOnly: true, // true: 클라이언트에서 쿠키를 확인하지 못한다. false: 클라이언트에서 쿠키를 확인할 수 있다.
-            secure: false, // true: https인 환경에서만 사용할 수 있다. false: https가 아닌 환경에서도 사용할 수 있다. 배포시에는 true https를 적용하고 true로 설정하는 것이 좋다.
+            httpOnly: true,
+            secure: false,
         },
     })
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+try {
+    fs.readdirSync("uploads");
+} catch (error) {
+    console.error("uploads 폴더가 없어 uploads 폴더를 생성합니다.");
+    fs.mkdirSync("uploads");
+}
+
+const upload = multer({
+    storage: multer.diskStorage({
+        // 저장할 공간에 대한 정보, diskStorage는 하드디스크에 업로드 파일을 저장한다는 것
+        destination(req, file, done) {
+            // 저장할 파일 경로
+            done(null, "uploads/");
+        },
+        filename(req, file, done) {
+            // 저장할 파일명(파일명 + 날짜 + 확장자 형식)
+            const ext = path.extname(file.originalname);
+            done(
+                null,
+                path.basename(file.originalname, ext) + Date.now() + ext
+            );
+        },
+        limits: { fileSize: 5 * 1024 * 1024 }, // 파일 개수나 파일 사이즈를 제한할 수 있음
+    }),
+});
+
+app.post("/upload", upload.single("image"), (req, res) => {
+    // 하나의 파일을 업로드 할 때
+    console.log(req.file, req.body); // req.files 안에 업로드 정보 존재
+    res.send("ok");
+});
+
+app.post("/upload", upload.none(), (req, res) => {
+    // 파일을 업로드하지 않을 때
+    console.log(req.body); // req.file 안에 업로드 정보 존재
+    res.send("ok");
+});
+
+app.post("/upload", upload.array("image"), (req, res) => {
+    // 여러개의 파일을 업로드 할 때, array는 하나의 요청 body 이름 아래 여러 파일이 있는 경우
+    console.log(req.files, req.body); // req.files 안에 업로드 정보 존재
+    res.send("ok");
+});
+
+app.post(
+    "/upload",
+    upload.fileds({ name: "image1" }, { name: "image2" }),
+    (req, res) => {
+        // 여러개의 파일을 업로드 할 때, fields는 여러 개의 요청 body 이름 아래 파일이 하나씩 있는 경우
+        console.log(req.files, req.body); // req.files 안에 업로드 정보 존재
+        res.send("ok");
+    }
+);
 
 app.set("port", process.env.PORT || 3000);
 

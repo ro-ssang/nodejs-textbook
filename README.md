@@ -38,3 +38,4 @@
 - [x] morgan, body-parser, cookie-parser
 - [x] static 미들웨어
 - [x] express-session 미들웨어
+- [x] multer 사용하기
