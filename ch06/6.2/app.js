@@ -1,3 +1,4 @@
+const dotenv = require("dotenv");
 const express = require("express");
 const path = require("path");
 const morgan = require("morgan");
@@ -6,16 +7,17 @@ const session = require("express-session");
 const multer = require("multer");
 const fs = require("fs");
 
+dotenv.config();
 const app = express();
 
 app.use(morgan("dev"));
 app.use("/", express.static(path.join(__dirname, "public")));
-app.use(cookieParser("secret code"));
+app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(
     session({
         resave: false,
         saveUninitialized: false,
-        secret: "secret code",
+        secret: process.env.COOKIE_SECRET,
         cookie: {
             httpOnly: true,
             secure: false,
@@ -34,38 +36,32 @@ try {
 
 const upload = multer({
     storage: multer.diskStorage({
-        // 저장할 공간에 대한 정보, diskStorage는 하드디스크에 업로드 파일을 저장한다는 것
         destination(req, file, done) {
-            // 저장할 파일 경로
             done(null, "uploads/");
         },
         filename(req, file, done) {
-            // 저장할 파일명(파일명 + 날짜 + 확장자 형식)
             const ext = path.extname(file.originalname);
             done(
                 null,
                 path.basename(file.originalname, ext) + Date.now() + ext
             );
         },
-        limits: { fileSize: 5 * 1024 * 1024 }, // 파일 개수나 파일 사이즈를 제한할 수 있음
+        limits: { fileSize: 5 * 1024 * 1024 },
     }),
 });
 
 app.post("/upload", upload.single("image"), (req, res) => {
-    // 하나의 파일을 업로드 할 때
-    console.log(req.file, req.body); // req.files 안에 업로드 정보 존재
+    console.log(req.file, req.body);
     res.send("ok");
 });
 
 app.post("/upload", upload.none(), (req, res) => {
-    // 파일을 업로드하지 않을 때
-    console.log(req.body); // req.file 안에 업로드 정보 존재
+    console.log(req.body);
     res.send("ok");
 });
 
 app.post("/upload", upload.array("image"), (req, res) => {
-    // 여러개의 파일을 업로드 할 때, array는 하나의 요청 body 이름 아래 여러 파일이 있는 경우
-    console.log(req.files, req.body); // req.files 안에 업로드 정보 존재
+    console.log(req.files, req.body);
     res.send("ok");
 });
 
@@ -73,8 +69,7 @@ app.post(
     "/upload",
     upload.fileds({ name: "image1" }, { name: "image2" }),
     (req, res) => {
-        // 여러개의 파일을 업로드 할 때, fields는 여러 개의 요청 body 이름 아래 파일이 하나씩 있는 경우
-        console.log(req.files, req.body); // req.files 안에 업로드 정보 존재
+        console.log(req.files, req.body);
         res.send("ok");
     }
 );
