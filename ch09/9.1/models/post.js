@@ -26,5 +26,8 @@ module.exports = class Post extends Sequelize.Model {
         );
     }
 
-    static associate(db) {}
+    static associate(db) {
+        db.Post.belongsTo(db.User); // foreignKey는 자동으로 상대 모델명 + Id, sourceKey나 targetKey는 자신이나 상대방의 primary key이므로 id.
+        db.Post.belongsToMany(db.Hashtag, { through: "PostHashtag" });
+    }
 };
