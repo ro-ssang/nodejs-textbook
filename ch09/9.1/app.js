@@ -9,6 +9,7 @@ const path = require("path");
 dotenv.config();
 const { sequelize } = require("./models");
 const pageRouter = require("./routes/page");
+const authRouter = require("./routes/auth");
 
 const app = express();
 
@@ -45,6 +46,7 @@ app.use(
 );
 
 app.use("/", pageRouter);
+app.use("/auth", authRouter);
 
 app.use((req, res, next) => {
     const error = new Error(`${req.method} ${req.url} 라우트가 없습니다`);
