@@ -22,7 +22,7 @@ nunjucks.configure("views", {
     watch: true,
 });
 sequelize
-    .sync({ force: true })
+    .sync({ force: false })
     .then(() => {
         console.log("DB 연결 성공");
     })
@@ -48,6 +48,7 @@ app.use(
     })
 );
 app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/", pageRouter);
 app.use("/auth", authRouter);
