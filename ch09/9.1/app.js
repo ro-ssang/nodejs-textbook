@@ -56,7 +56,7 @@ app.use("/auth", authRouter);
 app.use((req, res, next) => {
     const error = new Error(`${req.method} ${req.url} 라우트가 없습니다`);
     error.status = 404;
-    next(err);
+    next(error);
 });
 
 app.use((err, req, res, next) => {

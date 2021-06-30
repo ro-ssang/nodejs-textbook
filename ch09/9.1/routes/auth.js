@@ -48,4 +48,16 @@ router.get("/logout", isLoggedIn, (req, res, next) => {
     return res.redirect("/");
 });
 
+router.get("/kakao", passport.authenticate("kakao"));
+
+router.get(
+    "/kakao/callback",
+    passport.authenticate("kakao", {
+        failureRedirect: "/",
+    }),
+    (req, res) => {
+        return res.redirect("/");
+    }
+);
+
 module.exports = router;
